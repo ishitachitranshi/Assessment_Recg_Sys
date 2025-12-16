@@ -17,8 +17,8 @@ This project loads assessment data, runs a recommendation model, and serves it t
 3. [Installation](#installation)  
 4. [Usage](#usage)  
 5. [Project Structure](#project-structure)  
-6. [Contributing](#contributing)  
-7. [License](#license)
+6. Live Demo
+7. Author
 
 ## 🔍 About
 
@@ -43,13 +43,13 @@ This project reads dataset files (`Gen_AI Dataset.xlsx`, `gen_ai_data.xlsx`) and
 
 ## 📁 Project Structure
 Assessment_Recg_Sys/
-├── static/                 # CSS/JavaScript files
-├── templates/              # HTML templates
-├── app.py                  # Main Flask application
-├── recommender.py          # Recommendation logic
-├── Gen_AI Dataset.xlsx     # Dataset used for recommendations
-├── gen_ai_data.xlsx        # Additional dataset
-├── requirements.txt        # Dependencies
+- ├── static/                 # CSS/JavaScript files
+- ├── templates/              # HTML templates
+- ├── app.py                  # Main Flask application
+- ├── recommender.py          # Recommendation logic
+- ├── Gen_AI Dataset.xlsx     # Dataset used for recommendations
+- ├── gen_ai_data.xlsx        # Additional dataset
+- ├── requirements.txt        # Dependencies
 
 
 
@@ -58,4 +58,5 @@ Assessment_Recg_Sys/
 This project reads dataset files (`Gen_AI Dataset.xlsx`, `gen_ai_data.xlsx`) and uses a Python recommender (`recommender.py`) to output assessment recommendations. A Flask app (`app.py`) runs the application, serving templates and handling routes.
 
 
-##  Ishita Chitranshi 
+##  Author
+- Ishita Chitranshi 
