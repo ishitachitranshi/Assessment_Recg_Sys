@@ -1,39 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SHL Generative AI Recommender</title>
-  <link rel="stylesheet" href="/static/style.css" />
+<meta charset="UTF-8">
+<title>Assessment Product Catalog</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; font-family: 'Inter', sans-serif; transition: 0.3s; }
+/* THEMES */
+body.light { background: #f6f6f6; color: #222; }
+body.dark { background: #0f0f14; color: #f3f4f6; }
+/* HEADER */
+header { background: white; border-bottom: 1px solid #ddd; padding: 18px 40px; display: flex; justify-content: space-between; align-items: center; }
+body.dark header { background: #15151d; border-color: #2a2a35; }
+header h1 { margin: 0; font-size: 22px; }
+/* TOGGLE */
+.toggle { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 600; background: #0f4c81; color: white; }
+body.dark .toggle { background: #ff4da6; }
+/* CONTENT */
+.wrapper { padding: 40px; max-width: 1200px; }
+/* SECTION TITLES */
+.section-title { font-size: 22px; margin-bottom: 16px; }
+/* SEARCH ROW */
+.search-row { display: flex; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 35px; }
+/* INPUT */
+.input-box { flex: 1; }
+.input-box label { font-size: 14px; display: block; margin-bottom: 6px; }
+.input-box input { width: 100%; padding: 12px; font-size: 14px; border: 1px solid #999; }
+body.dark .input-box input { background: #15151d; color: white; border-color: #2a2a35; }
+/* DROPDOWN */
+.dropdown { width: 220px; }
+.dropdown label { font-size: 14px; display: block; margin-bottom: 6px; }
+.dropdown select { width: 100%; padding: 12px; font-size: 14px; border: 1px solid #999; background: white; }
+body.dark .dropdown select { background: #15151d; color: white; border-color: #2a2a35; }
+/* BUTTON */
+button.search-btn { padding: 12px 26px; background: #0077a3; border: none; color: white; font-size: 15px; cursor: pointer; }
+body.dark button.search-btn { background: #ff4da6; }
+button.search-btn:hover { opacity: 0.9; }
+ul { padding-left: 20px; }
+</style>
 </head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>Generative AI Recommendation System</h1>
-      <button id="toggle">🌙</button>
+<body class="light">
+
+<header>
+  <h1>Assessment Product Catalog</h1>
+  <button class="toggle" onclick="toggleTheme()">Dark Mode</button>
+</header>
+
+<div class="wrapper">
+
+  <!-- SEARCH BY KEYWORD -->
+  <div class="section-title">Search by keyword...</div>
+  <form method="POST" action="/search" class="search-row">
+    <div class="input-box">
+      <label>Keyword</label>
+      <input type="text" name="keyword" placeholder="Search by keyword..." />
     </div>
+    <button type="submit" class="search-btn">Search</button>
+  </form>
 
-    <input id="query" placeholder="Enter your query..." />
-    <button onclick="fetchResults()">Recommend</button>
+  <!-- DISPLAY RESULTS -->
+  {% if results %}
+    <div class="section-title">Results for "{{ keyword }}"</div>
+    <ul>
+      {% for r in results %}
+        <li>{{ r.text }} - Score: {{ r.score }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
 
-    <ul id="results"></ul>
+  <!-- SEARCH BY FILTERS (Static for now) -->
+  <div class="section-title">Search by choosing one or more...</div>
+  <div class="search-row">
+    <div class="dropdown">
+      <label>Job Family</label>
+      <select>
+        <option>Select...</option>
+        <option>IT</option>
+        <option>Sales</option>
+        <option>Finance</option>
+        <option>HR</option>
+      </select>
+    </div>
+    <div class="dropdown">
+      <label>Job Level</label>
+      <select>
+        <option>Select...</option>
+        <option>Entry-Level</option>
+        <option>Graduate</option>
+        <option>Mid-Professional</option>
+        <option>Manager</option>
+        <option>Director</option>
+        <option>Executive</option>
+      </select>
+    </div>
+    <div class="dropdown">
+      <label>Industry</label>
+      <select>
+        <option>Select...</option>
+        <option>Technology</option>
+        <option>Healthcare</option>
+        <option>Finance</option>
+        <option>Manufacturing</option>
+      </select>
+    </div>
+    <div class="dropdown">
+      <label>Language</label>
+      <select>
+        <option>Select...</option>
+        <option>English</option>
+        <option>Hindi</option>
+        <option>Spanish</option>
+        <option>French</option>
+      </select>
+    </div>
+    <button class="search-btn">Search</button>
   </div>
 
-  <script src="/static/theme.js"></script>
-  <script>
-    async function fetchResults() {
-      const q = document.getElementById('query').value;
-      const res = await fetch(`/recommend?query=${q}`);
-      const data = await res.json();
+  <!-- JOB CATEGORY -->
+  <div class="section-title">Search by job type...</div>
+  <div class="search-row">
+    <div class="dropdown">
+      <label>Job Category</label>
+      <select>
+        <option>Select...</option>
+        <option>Cognitive</option>
+        <option>Behavioral</option>
+        <option>Technical</option>
+        <option>Role Based</option>
+      </select>
+    </div>
+  </div>
 
-      const ul = document.getElementById('results');
-      ul.innerHTML = "";
+</div>
 
-      data.results.forEach(item => {
-        const li = document.createElement('li');
-        li.innerHTML = `<b>Score:</b> ${item.score}<br>${item.text}`;
-        ul.appendChild(li);
-      });
-    }
-  </script>
+<script>
+function toggleTheme() {
+  const body = document.body;
+  const btn = document.querySelector(".toggle");
+  if (body.classList.contains("light")) {
+    body.classList.replace("light", "dark");
+    btn.innerText = "Light Mode";
+  } else {
+    body.classList.replace("dark", "light");
+    btn.innerText = "Dark Mode";
+  }
+}
+</script>
+
 </body>
 </html>
+
