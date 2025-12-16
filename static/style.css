@@ -1,0 +1,42 @@
+:root {
+  --bg: #ffffff;
+  --text: #111;
+  --card: #f4f4f4;
+}
+
+body.dark {
+  --bg: #121212;
+  --text: #f5f5f5;
+  --card: #1f1f1f;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  transition: 0.3s;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+input, button {
+  padding: 10px;
+  margin-top: 10px;
+}
+
+ul li {
+  background: var(--card);
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 6px;
+}

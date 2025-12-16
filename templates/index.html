@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SHL Generative AI Recommender</title>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Generative AI Recommendation System</h1>
+      <button id="toggle">🌙</button>
+    </div>
+
+    <input id="query" placeholder="Enter your query..." />
+    <button onclick="fetchResults()">Recommend</button>
+
+    <ul id="results"></ul>
+  </div>
+
+  <script src="/static/theme.js"></script>
+  <script>
+    async function fetchResults() {
+      const q = document.getElementById('query').value;
+      const res = await fetch(`/recommend?query=${q}`);
+      const data = await res.json();
+
+      const ul = document.getElementById('results');
+      ul.innerHTML = "";
+
+      data.results.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `<b>Score:</b> ${item.score}<br>${item.text}`;
+        ul.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
