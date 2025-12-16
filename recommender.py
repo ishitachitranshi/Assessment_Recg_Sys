@@ -6,9 +6,19 @@ from sklearn.metrics.pairwise import cosine_similarity
 df = pd.read_excel("gen_ai_data.xlsx")
 df.fillna("", inplace=True)
 
-# Replace 'description' with the correct column name from your Excel
-text_column = "description"  
+# Automatically select the first text-like column if 'description' is not found
+default_column = "description"
+if default_column in df.columns:
+    text_column = default_column
+else:
+    # Choose first column that has string type
+    text_columns = df.select_dtypes(include=["object"]).columns
+    if len(text_columns) == 0:
+        raise ValueError("No text column found in the dataset!")
+    text_column = text_columns[0]
+    print(f"Column 'description' not found. Using '{text_column}' instead.")
 
+# Create TF-IDF vectors
 tfidf = TfidfVectorizer(stop_words="english")
 vectors = tfidf.fit_transform(df[text_column])
 
