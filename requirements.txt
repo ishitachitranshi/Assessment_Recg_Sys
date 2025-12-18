@@ -1,7 +1,7 @@
 fastapi
 uvicorn[standard]
 pandas
-faiss-cpu
+
 sentence-transformers
 numpy
 python-multipart
