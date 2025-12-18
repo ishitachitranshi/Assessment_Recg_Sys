@@ -5,4 +5,5 @@ scikit-learn
 numpy
 python-multipart
 openpyxl
+df = pd.read_excel("gen_ai_data.xlsx")
 
