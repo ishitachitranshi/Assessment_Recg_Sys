@@ -1,38 +1,19 @@
+from sentence_transformers import SentenceTransformer
+import faiss
 import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
-# Load dataset
-df = pd.read_excel("gen_ai_data.xlsx")
-df.fillna("", inplace=True)
+df = pd.read_csv("data/shl_products.csv")
 
-# Automatically select the first text-like column if 'description' is not found
-default_column = "description"
-if default_column in df.columns:
-    text_column = default_column
-else:
-    # Choose first column that has string type
-    text_columns = df.select_dtypes(include=["object"]).columns
-    if len(text_columns) == 0:
-        raise ValueError("No text column found in the dataset!")
-    text_column = text_columns[0]
-    print(f"Column 'description' not found. Using '{text_column}' instead.")
+model = SentenceTransformer("all-MiniLM-L6-v2")
+embeddings = model.encode(df["description"].tolist())
 
-# Create TF-IDF vectors
-tfidf = TfidfVectorizer(stop_words="english")
-vectors = tfidf.fit_transform(df[text_column])
+index = faiss.IndexFlatL2(embeddings.shape[1])
+index.add(np.array(embeddings))
 
-def recommend(query, top_n=5):
-    query_vec = tfidf.transform([query])
-    scores = cosine_similarity(query_vec, vectors).flatten()
-    top_indices = scores.argsort()[-top_n:][::-1]
+def recommend(query, top_k=5):
+    q_emb = model.encode([query])
+    D, I = index.search(np.array(q_emb), top_k)
 
-    results = []
-    for i in top_indices:
-        results.append({
-            "text": df.iloc[i][text_column],
-            "score": round(float(scores[i]), 3)
-        })
-
-    return results
+    return df.iloc[I[0]].to_dict(orient="records")
 
