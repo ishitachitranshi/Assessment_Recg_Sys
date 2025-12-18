@@ -1,21 +1,65 @@
-from fastapi import FastAPI, Request, Form
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
-from recommender import recommend
+from fastapi import FastAPI, Form
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-app = FastAPI()
+# -----------------------------
+# App initialization
+# -----------------------------
+app = FastAPI(title="SHL Assessment Recommendation API")
 
-# Templates folder
-templates = Jinja2Templates(directory="templates")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "results": []})
+# -----------------------------
+# Load and prepare data ONCE
+# -----------------------------
+df = pd.read_excel("gen_ai_data.xlsx")
+df.fillna("", inplace=True)
 
-@app.post("/search", response_class=HTMLResponse)
-async def search_keyword(request: Request, keyword: str = Form(...)):
-    results = recommend(keyword, top_n=5)
-    return templates.TemplateResponse("index.html", {"request": request, "results": results, "keyword": keyword})
+df["combined_text"] = (
+    df["Product Name"] + " " +
+    df["Description"] + " " +
+    df["Assessment Type"]
+)
+
+vectorizer = TfidfVectorizer(stop_words="english")
+tfidf_matrix = vectorizer.fit_transform(df["combined_text"])
+
+# -----------------------------
+# Recommendation logic
+# -----------------------------
+def recommend(query: str, top_k: int = 5):
+    query_vec = vectorizer.transform([query])
+    scores = cosine_similarity(query_vec, tfidf_matrix)[0]
+
+    top_indices = scores.argsort()[::-1][:top_k]
+
+    results = []
+    for idx in top_indices:
+        results.append({
+            "title": df.iloc[idx]["Product Name"],
+            "description": df.iloc[idx]["Description"],
+            "score": round(float(scores[idx]), 3)
+        })
+    return results
+
+# -----------------------------
+# Health check (VERY IMPORTANT)
+# -----------------------------
+@app.get("/")
+def health():
+    return {"status": "running"}
+
+# -----------------------------
+# Search endpoint
+# -----------------------------
+@app.post("/search")
+def search(query: str = Form(...)):
+    return recommend(query)
 
