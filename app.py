@@ -19,7 +19,7 @@ app.add_middleware(
 # -----------------------------
 # Load and prepare data ONCE
 # -----------------------------
-df = pd.read_csv("gen_ai_data.csv")
+df = pd.read_excel("gen_ai_data.xlsx")
 df.fillna("", inplace=True)
 
 df["combined_text"] = (
