@@ -1,10 +1,11 @@
 fastapi
 uvicorn
 pandas
-scikit-learn
 openpyxl
+scikit-learn
+faiss-cpu
+sentence-transformers==2.7.0
+numpy
 jinja2
 python-multipart
-sentence-transformers
-faiss-cpu
 
