@@ -2,11 +2,9 @@ from fastapi import FastAPI, Form
 from fastapi.middleware.cors import CORSMiddleware
 from recommender import recommend
 
-# -----------------------------
-# App initialization
-# -----------------------------
 app = FastAPI(title="SHL Assessment Recommendation API")
 
+# Allow CORS for frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,18 +12,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# -----------------------------
-# Health check
-# -----------------------------
+# Health check for Render
 @app.get("/")
 def health():
     return {"status": "running"}
 
-# -----------------------------
 # Search endpoint
-# -----------------------------
 @app.post("/search")
 def search(query: str = Form(...)):
-    results = recommend(query, top_k=5)
-    return {"results": results}
+    return recommend(query)
 
