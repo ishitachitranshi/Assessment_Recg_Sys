@@ -50,7 +50,7 @@ def recommend(query: str, top_k: int = 5):
     return results
 
 # -----------------------------
-# Health check (VERY IMPORTANT)
+# Health check (IMPORTANT for Render)
 # -----------------------------
 @app.get("/")
 def health():
