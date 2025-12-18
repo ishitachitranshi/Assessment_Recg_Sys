@@ -4,4 +4,5 @@ pandas
 scikit-learn
 numpy
 python-multipart
+openpyxl
 
